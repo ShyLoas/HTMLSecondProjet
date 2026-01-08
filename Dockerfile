@@ -1,22 +1,17 @@
-FROM php:8.2-apache
+# Sử dụng Nginx làm web server
+FROM nginx:alpine
 
-RUN docker-php-ext-install mysqli pdo pdo_mysql
-RUN a2enmod rewrite
+# Xóa cấu hình mặc định
+RUN rm /etc/nginx/conf.d/default.conf
 
-RUN apt-get update && apt-get install -y \
-    git \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
+# Sao chép file HTML và assets vào thư mục Nginx
+COPY . /usr/share/nginx/html
 
-WORKDIR /var/www/html
+# Sao chép cấu hình Nginx tùy chỉnh (nếu có)
+# COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Chỉ clone từ GitHub
-RUN git clone https://github.com/ShyLoas/HTMLSecondProjet .
-
-RUN chown -R www-data:www-data /var/www/html && \
-    chmod -R 755 /var/www/html
-
-RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
-
+# Mở port 80
 EXPOSE 80
-CMD ["apache2-foreground"]
+
+# Khởi động Nginx
+CMD ["nginx", "-g", "daemon off;"]
