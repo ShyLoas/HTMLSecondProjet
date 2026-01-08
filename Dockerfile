@@ -1,8 +1,16 @@
-# Sử dụng Nginx để serve HTML
 FROM nginx:alpine
 
-# Copy tất cả file HTML vào thư mục mặc định của Nginx
+# Copy toàn bộ file
 COPY . /usr/share/nginx/html
 
-# Expose port 80
+# Thêm cấu hình trực tiếp trong Dockerfile
+RUN echo 'server { \
+    listen 80; \
+    location / { \
+        root /usr/share/nginx/html; \
+        index index.html index.htm; \
+        try_files \$uri \$uri/ /index.html; \
+    } \
+}' > /etc/nginx/conf.d/default.conf
+
 EXPOSE 80
